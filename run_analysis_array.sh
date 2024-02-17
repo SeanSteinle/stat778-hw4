@@ -6,8 +6,9 @@
 
 module load hosts/hopper gnu10/10.3.0-ya
 module load python/3.10.1-qb
+#source ~/venvs/hw4/bin/activate
 
-python model_analysis.py
+python model_analysis.py 12 10
 
 #TODO: should this create a venv and install everything necessary?
 #source ~/venvs/hw4/bin/activate
