@@ -2,13 +2,14 @@
 import pandas as pd
 import numpy as np
 
-from transformations import logit, sigmoid
-from metrics import rmspe, tau
-from parallelize import all_models_repK, run_jobs
+from utils.transformations import logit, sigmoid
+from utils.metrics import rmspe, tau
+from utils.parallelize import all_models_repK, run_jobs
 
-#loading data
+#loading data, # of cpus
 graduation_data_path = "data/inclass_activity_02-parallel-data.csv"
 df = pd.read_csv(graduation_data_path)
+n_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
 
 #numerify categorical vars, transform target
 categorical_features = ['school_type','magnet','urban_centric_locale','lunch_program']
@@ -53,7 +54,7 @@ feature_sets = [
 
 #run jobs!
 print(f"running jobs!")
-partition_results = run_jobs(3, df, feature_sets)
+partition_results = run_jobs(n_cpus, df, feature_sets)
 print(f"finished running jobs!")
 
 #aggregate results by model type
@@ -66,3 +67,5 @@ for partition_n,partition_data in enumerate(partition_results):
 #display model results
 for i in range(len(model_results)):
     print(f"Model #{i+1} results:\nAverage RMSPE:{np.mean(model_results[i]['rmspe'])}\tavg tau: {np.mean(model_results[i]['tau'])}")
+
+#TODO: write results to file?

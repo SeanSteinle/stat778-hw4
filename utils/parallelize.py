@@ -6,7 +6,7 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import make_scorer
 
-from metrics import rmspe, tau
+from utils.metrics import rmspe, tau
 
 def all_models_repK(df: pd.DataFrame, feature_sets: list, n_repeats: int, n_splits: int, c: float=2.0):
     """Runs n_repeats repetitions of k-fold cross validations where k=n_splits."""
