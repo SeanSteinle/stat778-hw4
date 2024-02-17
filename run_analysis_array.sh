@@ -7,4 +7,5 @@
 
 module load hosts/hopper gnu10/10.3.0-ya
 module load python/3.10.1-qb
-python model_analysis.py 12 10
+mkdir "outputs/array_runs/" -p
+python model_analysis.py 12 10 "outputs/array_runs/"

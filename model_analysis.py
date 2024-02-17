@@ -8,6 +8,10 @@ from utils.transformations import logit, sigmoid
 from utils.metrics import rmspe, tau
 from utils.parallelize import all_models_repK, run_jobs
 
+#parse arguments
+if len(sys.argv) != 4: raise ValueError("invalid number of arguments supplied. either run like: python model_analysis.py or python model_analysis.py 5 10")
+n_repeats, n_splits, jobdir = int(sys.argv[1]), int(sys.argv[2]), sys.argv[3] #TODO: make this clearer
+
 #loading data
 graduation_data_path = "data/inclass_activity_02-parallel-data.csv"
 df = pd.read_csv(graduation_data_path)
@@ -16,23 +20,18 @@ df = pd.read_csv(graduation_data_path)
 n_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
 n_cpus = int(n_cpus) if n_cpus != None else 1
 
-#get job and task ids, set up output file systems
+#get job id, set output file, set specific seed for task
 jobid = os.environ.get('SLURM_JOB_ID')
-taskid = os.environ.get('SLURM_PROCID')
 jobid = jobid if jobid != None else "unnamed_job"
-taskid = taskid if taskid != None else "unnamed_task"
-os.mkdir(f"outputs/{jobid}")
-output_file = f"outputs/{jobid}/{taskid}.csv"
-f = open(output_file, 'w') 
+np.random.seed(int(jobid)) #TODO: is this sufficient? i think so: https://stackoverflow.com/questions/31057197/should-i-use-random-seed-or-numpy-random-seed-to-control-random-number-gener
+output_file = f"{jobdir}{jobid}.csv"
+f = open(output_file, 'w')
 
-#unpack number of repeats, splits to be performed
-if len(sys.argv) == 1:
-    n_repeats, n_splits = 50, 10
-elif len(sys.argv) == 3:
-    n_repeats, n_splits = int(sys.argv[1]), int(sys.argv[2])
-else:
-    raise ValueError("invalid number of arguments supplied. either run like: python model_analysis.py or python model_analysis.py 5 10")
-    #TODO: just use argparse
+#hm. looks like task/proc is always 0. creates 10 different job ids, starting at the first job id.
+#so what we really need is a way to put all of these job ids into the same directory. needs to be done at the
+#batch script level!
+
+#WE DONT NEED PERFECTLY DEFAULT BEHAVIOR BETWEEN SING AND ARRAY!
 
 #numerify categorical vars, transform target
 categorical_features = ['school_type','magnet','urban_centric_locale','lunch_program']
