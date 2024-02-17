@@ -8,14 +8,24 @@ from utils.transformations import logit, sigmoid
 from utils.metrics import rmspe, tau
 from utils.parallelize import all_models_repK, run_jobs
 
-#loading data, # of cpus, output path
+#loading data
 graduation_data_path = "data/inclass_activity_02-parallel-data.csv"
 df = pd.read_csv(graduation_data_path)
+
+#get number of cpus
 n_cpus = os.environ.get('SLURM_CPUS_PER_TASK')
 n_cpus = int(n_cpus) if n_cpus != None else 1
+
+#get job and task ids, set up output file systems
 jobid = os.environ.get('SLURM_JOB_ID')
-output_file = "outputs/"+jobid+".txt" if jobid != None else f"outputs/unnamed.txt" 
-f = open(output_file, 'w')
+taskid = os.environ.get('SLURM_PROCID')
+jobid = jobid if jobid != None else "unnamed_job"
+taskid = taskid if taskid != None else "unnamed_task"
+os.mkdir(f"outputs/{jobid}")
+output_file = f"outputs/{jobid}/{taskid}.csv"
+f = open(output_file, 'w') 
+
+#unpack number of repeats, splits to be performed
 if len(sys.argv) == 1:
     n_repeats, n_splits = 50, 10
 elif len(sys.argv) == 3:
