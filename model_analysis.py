@@ -86,6 +86,8 @@ for partition_n,partition_data in enumerate(partition_results):
         
 #display model results
 f.write("model_index,rmspe,tau\n")
-for model_n in range(len(model_results)):
-    f.write(f"{model_n},{model_results[model_n]['rmspe']},{model_results[model_n]['tau']}\n")
+for model_n in range(len(model_results)): #TODO: the dimensionality here is unclear and its affecting my results...
+    assert len(model_results[model_n]['rmspe']) == len(model_results[model_n]['tau'])
+    for sample_n in range(len(model_results[model_n]['rmspe'])):
+        f.write(f"{model_n},{model_results[model_n]['rmspe'][sample_n]},{model_results[model_n]['tau'][sample_n]}\n")
 f.close()
